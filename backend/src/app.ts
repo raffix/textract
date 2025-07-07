@@ -1,8 +1,15 @@
 import express, { Request, Response } from 'express';
-import mongoose from 'mongoose';
+import { connectDb } from './config/db.config';
 
 const app = express();
-const port = 5000; 
+const port = process.env.PORT || 5000;
+
+connectDb();
+
+app.get("/health", (req, res) => {
+    res.status(200).json({ status: 'ok', message: 'Backend service is healthy'});
+});
+
 app.listen(port, () => {
-  console.log('Listening to the port'+port);
-})
+  console.log(`Listening to the port ${port}`);
+});

@@ -15,13 +15,27 @@ services:
     container_name: backend_app
     ports:
       - "5000:5000"
-    volumes:
-      - backend_uploads:/app/uploads
     environment:
       MONGO_URI: mongodb://mongo:27017/my_app_db
       PORT: 5000
     depends_on:
       - mongo
+    networks:
+      - backend-network
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend_app
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_APP_API_BASE_URL= http:backend:5000/api
+    depends_on:
+      - backend
     networks:
       - backend-network
 
@@ -31,4 +45,3 @@ networks:
 
 volumes:
   mongo_data:
-  backend_uploads:
