@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -9,6 +9,7 @@ import {
   ListItem,
   ListItemText,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
@@ -50,7 +51,12 @@ const FileSearchAndList: React.FC<FileSearchAndListProps> = ({
   const handleClearSearch = () => {
     setSearchTerm('');
     showToast('Search cleared', 'info');
+    onSearchFiles();
   };
+
+  useEffect(() => {
+    onSearchFiles();
+  }, [onSearchFiles]);
 
   const handleSearch = async () => {
     try {
@@ -66,6 +72,12 @@ const FileSearchAndList: React.FC<FileSearchAndListProps> = ({
       console.error('Failed to fetch content:', err);
     }
   }
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === 'Enter') {
+      handleSearch();
+    }
+  };
 
   const handleViewContentInternal = async (fileId: string, name: string) => {
     setViewContentLoading(true);
@@ -119,28 +131,33 @@ const FileSearchAndList: React.FC<FileSearchAndListProps> = ({
         variant="outlined"
         fullWidth
         value={searchTerm}
+        onKeyDown={handleKeyDown}
         onChange={(e) => setSearchTerm(e.target.value)}
         slotProps={{
           input: {
             endAdornment: (
               <>
                 <InputAdornment position="start">
-                  <IconButton
-                    aria-label="clear search"
-                    onClick={handleSearch}
-                    edge="end"
-                  >
-                    <SearchIcon />
-                  </IconButton>
+                  <Tooltip title="Search">
+                    <IconButton
+                      aria-label="clear search"
+                      onClick={handleSearch}
+                      edge="end"
+                    >
+                      <SearchIcon />
+                    </IconButton>
+                  </Tooltip>
                 </InputAdornment>
                 <InputAdornment position="end">
-                  <IconButton
-                    aria-label="clear search"
-                    onClick={handleClearSearch}
-                    edge="end"
-                  >
-                    <Clear />
-                  </IconButton>
+                  <Tooltip title="Clean">
+                    <IconButton
+                      aria-label="clear search"
+                      onClick={handleClearSearch}
+                      edge="end"
+                    >
+                      <Clear />
+                    </IconButton>
+                  </Tooltip>
                 </InputAdornment>
               </>
             ),
@@ -170,7 +187,16 @@ const FileSearchAndList: React.FC<FileSearchAndListProps> = ({
           {viewContentError}
         </Typography>
       )}
-      <List>
+      <List sx={{
+          whiteSpace: 'pre-wrap', 
+          wordWrap: 'break-word', 
+          maxHeight: '200px', 
+          overflowY: 'auto',
+          p: 2,
+          backgroundColor: 'background.default',
+          borderRadius: '4px',
+          border: '1px solid #333'
+      }}>
         {files.map((file) => (
           <ListItem
             key={file._id}
@@ -184,6 +210,7 @@ const FileSearchAndList: React.FC<FileSearchAndListProps> = ({
                 >
                   View Content
                 </Button>
+                <Tooltip title="Delete">
                 <IconButton
                   edge="end"
                   aria-label="delete"
@@ -196,6 +223,7 @@ const FileSearchAndList: React.FC<FileSearchAndListProps> = ({
                     <DeleteIcon />
                   )}
                 </IconButton>
+                </Tooltip>
               </Box>
             }
           >

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Typography, Box, CircularProgress } from '@mui/material';
+import { Button, Typography, Box, CircularProgress, ListItem, ListItemText, Tooltip } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 import { useToast } from '../contexts/ToastContext';
@@ -124,27 +124,42 @@ const FileReaderAndUpload: React.FC<FileReaderAndUploadProps> = ({ onUploadSucce
   }
 
   return (
-    <Box sx={{ my: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
+    <Box sx={{ my: 3, display: 'flex', flexDirection: 'column', gap: 2}}>
       <Typography variant="h5" component="h2" sx={{ mb: 2 }}>
             Upload Form
       </Typography>
-      <Button
-        variant="contained"
-        component="label"
-        startIcon={<CloudUploadIcon />}
-      >
-        Select Text Files
-        <input
-          type="file"
-          hidden
-          multiple
-          onChange={handleFileChange}
-          accept="text/*, application/json, application/xml"
-        />
-      </Button>
+      <Tooltip title="Only accepted this formats: txt, json and xml">
+        <Button
+          variant="contained"
+          component="label"
+          startIcon={<CloudUploadIcon />}
+        >
+          Select Text Files (.txt, .json, .xml)
+          <input
+            type="file"
+            hidden
+            multiple
+            onChange={handleFileChange}
+            accept="text/*, application/json, application/xml"
+          />
+        </Button>
+      </Tooltip>
       {selectedFiles.length > 0 && (
-        <Typography variant="body2">
-          Selected for upload: {selectedFiles.map(f => f.name).join(', ')}
+        <Typography variant="body2" sx={{
+          whiteSpace: 'pre-wrap', 
+          wordWrap: 'break-word', 
+          maxHeight: '200px', 
+          overflowY: 'auto',
+          p: 2,
+          backgroundColor: 'background.default',
+          borderRadius: '4px',
+          border: '1px solid #333'
+        }}>
+          Selected for upload: {selectedFiles.map((file, index) => (
+            <ListItem key={file.name + index} disableGutters>
+              <ListItemText primary={file.name} sx={{ ml: 1 }} />
+            </ListItem>
+          ))}
         </Typography>
       )}
       {incompatibleFilesMessage && (

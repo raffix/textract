@@ -44,7 +44,7 @@ function App() {
     } finally {
       setLoadingFiles(false);
     }
-  }, []);
+  }, [showToast]);
 
   const handleViewContent = useCallback(async (fileId: string, name: string) => {
     try {
@@ -88,10 +88,10 @@ function App() {
       console.error('Error deleting file:', err);
       throw new Error(errorMessage);
     }
-  }, [fetchFiles]);
+  }, [fetchFiles, showToast]);
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth={false}>
       <Box>
         <Typography variant="h4" component="h1" gutterBottom>
           Textract File Finder
@@ -118,9 +118,19 @@ function App() {
 
           <Grid size={{xs:12}}>
             {selectedFile && (
-              <Box sx={{ mt: 4, p: 3, border: '1px solid gray', borderRadius: '4px', backgroundColor: 'background.paper' }}>
-                <Typography variant="h6" component="h3" gutterBottom>
-                  Content of: {selectedFile.name}
+              <Box sx={{ mt: 2, p: 3, border: '1px solid gray', borderRadius: '4px' }}>
+                <Typography variant="h6" component="h4" gutterBottom>
+                  Content of: {selectedFile.name} - Upload date {selectedFile.uploadDate}
+                  <Button
+                    variant="outlined"
+                    sx={{ float: 'right' }}
+                    onClick={() => {
+                      setSelectedFileContent(null);
+                      setSelectedFile(null);
+                    }}
+                  >
+                    Clear Content View
+                  </Button>
                 </Typography>
                 <Box
                   component="pre" 
@@ -137,16 +147,7 @@ function App() {
                 >
                   {selectedFileContent || ''}
                 </Box>
-                <Button
-                  variant="outlined"
-                  sx={{ mt: 2 }}
-                  onClick={() => {
-                    setSelectedFileContent(null);
-                    setSelectedFile(null);
-                  }}
-                >
-                  Clear Content View
-                </Button>
+                
               </Box>
             )}
           </Grid>
