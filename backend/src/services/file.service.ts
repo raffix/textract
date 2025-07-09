@@ -16,5 +16,13 @@ export const getAllFiles = async (): Promise<IFile[]> => {
 }
 
 export const getFilesByContent = async (content: string): Promise<IFile[] | null> => {
-  return await File.find({ content: { $regex: content, $options: 'i'}});
+  return File.find({ content: { $regex: content, $options: 'i'}}).select('-content').lean();
+}
+
+export const getFileById = async (id: string): Promise<IFile | null> => {
+  return File.findById(id).lean();
+}
+
+export const deleteFileById = async (id: string): Promise<IFile | null> => {
+  return File.findByIdAndDelete(id).lean();
 }

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Button, Typography, Box, CircularProgress } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
+import { useToast } from '../contexts/ToastContext';
+
 interface FileReaderAndUploadProps { 
   onUploadSuccess: () => void;
   apiBaseUrl: string;
@@ -12,7 +14,9 @@ const FileReaderAndUpload: React.FC<FileReaderAndUploadProps> = ({ onUploadSucce
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [incompatibleFilesMessage, setIncompatibleFilesMessage] = useState<string | null>(null)
-  
+
+  const { showToast } = useToast();
+
   const isSupportedFile = (fileType: string): boolean => {
     return fileType.startsWith('text') ||
            fileType === 'application/json' ||
@@ -102,7 +106,7 @@ const FileReaderAndUpload: React.FC<FileReaderAndUploadProps> = ({ onUploadSucce
         throw new Error(`Upload filed: ${errorDate.message || response.statusText}`);
       }
 
-      alert('Files uploaded successfully!');
+      showToast('Files uploaded successfully!', 'success');
       setSelectedFiles([]);
       onUploadSuccess();
     } catch (err: unknown) {
@@ -121,6 +125,9 @@ const FileReaderAndUpload: React.FC<FileReaderAndUploadProps> = ({ onUploadSucce
 
   return (
     <Box sx={{ my: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Typography variant="h5" component="h2" sx={{ mb: 2 }}>
+            Upload Form
+      </Typography>
       <Button
         variant="contained"
         component="label"
